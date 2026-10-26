@@ -1,0 +1,11 @@
+python -m pip install virtualenv
+
+python -m virtualenv venv
+
+.\venv\Scripts\activate
+
+python -m pip install flask
+
+python -m pip install sqlalchemy
+
+python -m pip install flask-cors
