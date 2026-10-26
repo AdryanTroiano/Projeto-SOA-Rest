@@ -27,3 +27,6 @@ class LivroService:
     
     def get_por_id(self, id):
         return self.__repository.get_por_id(id)
+    
+    def get_por_titulo(self, titulo):
+        return self.__repository.get_por_titulo(titulo)

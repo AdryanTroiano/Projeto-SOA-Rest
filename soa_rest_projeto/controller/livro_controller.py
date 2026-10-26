@@ -33,6 +33,18 @@ def get_livro2(id):
         return jsonify(livro.to_dict())
     else:
         return make_response(jsonify({"mensagem":"Nao encontrado!"}),404)
+    
+@livro_bp.route("/getlivrotitulo")
+def get_livro_titulo():
+    titulo = request.args.get("titulo")
+    livros = service.get_por_titulo(titulo)
+
+    if livros:
+        return jsonify([livro.to_dict() for livro in livros])
+    else:
+        return make_response(
+            jsonify({"mensagem": "Nao encontrado!"}), 404
+        )
 
 
 @livro_bp.errorhandler(ValueError)

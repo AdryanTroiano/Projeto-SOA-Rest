@@ -9,3 +9,6 @@ python -m pip install flask
 python -m pip install sqlalchemy
 
 python -m pip install flask-cors
+
+http://localhost:9000/getlivro?id=2
+http://localhost:9000/getlivrotitulo?titulo=

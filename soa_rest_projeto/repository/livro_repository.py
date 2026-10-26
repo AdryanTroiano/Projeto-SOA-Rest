@@ -19,3 +19,10 @@ class LivroRepository:
         livro = self.__session.get(Livro, id)
         self.__session.close()
         return livro
+    
+    def get_por_titulo(self, titulo):
+        livros = self.__session.query(Livro).filter(
+        Livro.titulo.like(f"%{titulo}%")
+        ).all()
+        self.__session.close()
+        return livros
