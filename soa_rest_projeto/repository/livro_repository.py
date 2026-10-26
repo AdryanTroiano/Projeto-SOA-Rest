@@ -14,3 +14,8 @@ class LivroRepository:
         livros = self.__session.query(Livro).all()
         self.__session.close()
         return livros
+    
+    def get_por_id(self, id):
+        livro = self.__session.get(Livro, id)
+        self.__session.close()
+        return livro

@@ -17,6 +17,23 @@ def livro():
     livros = service.listar()
     return jsonify([livro.to_dict() for livro in livros])
 
+@livro_bp.route("/getlivro")
+def get_livro():
+    id = request.args.get("id")
+    livro = service.get_por_id(id)
+    if livro:
+        return jsonify(livro.to_dict())
+    else: 
+        return make_response(jsonify({"mensagem":"Nao encontrado!"}),404)
+    
+@livro_bp.route("/getlivroid/<int:id>")
+def get_livro2(id):
+    livro = service.get_por_id(id)
+    if livro:
+        return jsonify(livro.to_dict())
+    else:
+        return make_response(jsonify({"mensagem":"Nao encontrado!"}),404)
+
 
 @livro_bp.errorhandler(ValueError)
 def erro(mensagem):

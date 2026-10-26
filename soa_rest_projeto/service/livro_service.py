@@ -24,3 +24,6 @@ class LivroService:
 
     def listar(self):
         return self.__repository.listar()
+    
+    def get_por_id(self, id):
+        return self.__repository.get_por_id(id)
