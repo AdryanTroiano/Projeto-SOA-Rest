@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Livros Cadastrados</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        const endpoint = "http://localhost:9000/livro";
+
+        async function listar() {
+            try {
+                const resposta = await fetch(endpoint);
+                const livros = await resposta.json();
+
+                const tabela = document.getElementById("tabela");
+                tabela.innerHTML = "";
+
+                livros.forEach(livro => {
+                    const linha = tabela.insertRow();
+
+                    linha.insertCell(0).textContent = livro.id;
+                    linha.insertCell(1).textContent = livro.titulo;
+                    linha.insertCell(2).textContent = livro.autor;
+                    linha.insertCell(3).textContent = livro.isbn;
+                    linha.insertCell(4).textContent = livro.ano;
+
+                    const acoes = linha.insertCell(5);
+
+                    const btnEditar = document.createElement("button");
+                    btnEditar.textContent = "Editar";
+                    btnEditar.onclick = () => buscarLivro(livro.id);
+
+                    const btnExcluir = document.createElement("button");
+                    btnExcluir.textContent = "Excluir";
+                    btnExcluir.onclick = () => excluirLivro(livro.id);
+
+                    acoes.appendChild(btnEditar);
+                    acoes.appendChild(btnExcluir);
+                });
+
+            } catch (erro) {
+                alert("Erro ao carregar os livros.");
+                console.error(erro);
+            }
+        }
+
+        async function buscarLivro(id) {
+            try {
+                const resposta = await fetch(`http://localhost:9000/getlivroid/${id}`);
+                const livro = await resposta.json();
+
+                if (!resposta.ok) {
+                    alert(livro.mensagem);
+                    return;
+                }
+
+                document.getElementById("id").value = livro.id;
+                document.getElementById("titulo").value = livro.titulo;
+                document.getElementById("autor").value = livro.autor;
+                document.getElementById("isbn").value = livro.isbn;
+                document.getElementById("ano").value = livro.ano;
+
+                document.getElementById("formulario").style.display = "block";
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            } catch (erro) {
+                alert("Erro ao buscar o livro.");
+                console.error(erro);
+            }
+        }
+
+        async function alterarLivro(event) {
+            event.preventDefault();
+
+            const livro = {
+                id: Number(document.getElementById("id").value),
+                titulo: document.getElementById("titulo").value,
+                autor: document.getElementById("autor").value,
+                isbn: document.getElementById("isbn").value,
+                ano: Number(document.getElementById("ano").value)
+            };
+
+            try {
+                const resposta = await fetch(endpoint, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(livro)
+                });
+
+                const dados = await resposta.json();
+                alert(dados.mensagem);
+
+                if (resposta.ok) {
+                    cancelarEdicao();
+                    listar();
+                }
+
+            } catch (erro) {
+                alert("Erro ao alterar o livro.");
+                console.error(erro);
+            }
+        }
+
+        async function excluirLivro(id) {
+            if (!confirm("Deseja realmente excluir este livro?")) {
+                return;
+            }
+
+            try {
+                const resposta = await fetch(`${endpoint}?id=${id}`, {
+                    method: "DELETE"
+                });
+
+                const dados = await resposta.json();
+                alert(dados.mensagem);
+
+                if (resposta.ok) {
+                    listar();
+                    cancelarEdicao();
+                }
+
+            } catch (erro) {
+                alert("Erro ao excluir o livro.");
+                console.error(erro);
+            }
+        }
+
+        function cancelarEdicao() {
+            document.getElementById("frmCadastro").reset();
+            document.getElementById("formulario").style.display = "none";
+        }
+
+        window.onload = function() {
+            listar();
+
+            document.getElementById("frmCadastro").onsubmit = alterarLivro;
+            document.getElementById("btnCancelar").onclick = cancelarEdicao;
+        };
+    </script>
+</head>
+
+<body>
+
+    <h1>Livros Cadastrados</h1>
+
+<div id="formulario" class="modal">
+    <div class="modal-conteudo">
+
+        <span class="fechar" id="btnCancelar">&times;</span>
+
+        <h2>Editar Livro</h2>
+
+        <form id="frmCadastro">
+
+            <input type="hidden" id="id">
+
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" maxlength="100" required>
+
+            <label for="autor">Autor:</label>
+            <input type="text" id="autor" maxlength="100" required>
+
+            <label for="isbn">ISBN:</label>
+            <input type="text" id="isbn" maxlength="20" required>
+
+            <label for="ano">Ano:</label>
+            <input type="number" id="ano" required>
+
+            <button type="submit">Salvar Alterações</button>
+            <button type="button" id="btnCancelarFormulario">Cancelar</button>
+
+        </form>
+
+    </div>
+</div>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>ISBN</th>
+                <th>Ano</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabela"></tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button onclick="listar()">Atualizar Lista</button>
+    </div>
+
+</body>
+</html>

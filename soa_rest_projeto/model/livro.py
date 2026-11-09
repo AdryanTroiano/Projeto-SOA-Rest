@@ -10,7 +10,8 @@ class Livro(Base):
     isbn = Column(String(20), nullable=False)
     ano = Column(Integer, nullable=False)
 
-    def __init__(self, titulo: str, autor: str, isbn: str, ano: int):
+    def __init__(self, titulo: str, autor: str, isbn: str, ano: int, id=None):
+        self.id = id
         self.titulo = titulo
         self.autor = autor
         self.isbn = isbn
